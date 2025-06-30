@@ -1,0 +1,840 @@
+================================================================================
+                    SNAPADEAL UGANDA - PROJECT HANDOVER DOCUMENTATION
+================================================================================
+
+📅 Date: June 30, 2025
+🔧 Backend Status: COMPLETE & FULLY FUNCTIONAL
+🎨 Frontend Status: NEEDS AUTHENTICATION UPDATES
+📧 Email System: FULLY CONFIGURED & TESTED
+💳 Payment System: FLUTTERWAVE INTEGRATED & TESTED
+
+================================================================================
+                                TABLE OF CONTENTS
+================================================================================
+
+1. PROJECT OVERVIEW
+2. WHAT HAS BEEN COMPLETED
+3. BACKEND SYSTEM STATUS
+4. FRONTEND REQUIREMENTS
+5. AUTHENTICATION FLOW IMPLEMENTATION
+6. API ENDPOINTS REFERENCE
+7. TESTING CREDENTIALS
+8. DEVELOPMENT SETUP
+9. PRIORITY TASKS
+10. CODE EXAMPLES
+11. TROUBLESHOOTING
+12. DEPLOYMENT NOTES
+
+================================================================================
+                                1. PROJECT OVERVIEW
+================================================================================
+
+SNAPADEAL UGANDA is a Groupon-style deals platform with three applications:
+
+🛍️  CUSTOMER APP (localhost:3000) - Browse and purchase deals
+🏪  MERCHANT APP (localhost:3001) - Create and manage deals  
+👑  ADMIN APP (localhost:3002) - Approve deals and manage platform
+
+TECHNOLOGY STACK:
+- Backend: Go (Gin framework) with SQLite database
+- Frontend: React with TypeScript
+- Authentication: JWT with email OTP verification
+- Payments: Flutterwave integration
+- Email: Gmail SMTP with HTML templates
+
+================================================================================
+                                2. WHAT HAS BEEN COMPLETED
+================================================================================
+
+✅ BACKEND SYSTEM (100% COMPLETE):
+   - User registration with OTP email verification
+   - Login with email OR phone number support
+   - Password recovery with email reset links
+   - JWT token authentication
+   - Role-based access control (customer, merchant, admin)
+   - Deal management with admin approval workflow
+   - Flutterwave payment integration
+   - Professional email templates (OTP, welcome, password reset)
+   - Image upload and serving with CORS
+   - Comprehensive error handling
+   - Database models and migrations
+   - CORS configuration for all three apps
+
+✅ EMAIL SYSTEM (100% FUNCTIONAL):
+   - Gmail SMTP configuration working
+   - Beautiful HTML email templates
+   - OTP verification emails
+   - Password reset emails with secure tokens
+   - Welcome emails after account verification
+   - Proper email routing for different user roles
+
+✅ PAYMENT SYSTEM (INTEGRATED):
+   - Flutterwave payment gateway integration
+   - Mobile money support (MTN, Airtel)
+   - Transaction management
+   - Payment verification callbacks
+   - Simulation mode for development
+
+✅ ADMIN FEATURES:
+   - Deal approval/rejection workflow
+   - User management
+   - Dashboard statistics
+   - Notification system
+
+✅ TESTING COMPLETED:
+   - User registration with real email delivery
+   - OTP verification working
+   - Login with both email and phone
+   - Password reset flow tested
+   - Admin login verified
+   - All API endpoints tested with curl
+   - CORS working for all apps
+
+================================================================================
+                                3. BACKEND SYSTEM STATUS
+================================================================================
+
+🚀 BACKEND SERVER: FULLY OPERATIONAL
+   - Running on: http://localhost:8080
+   - Database: SQLite (snapadeal.db) with all tables created
+   - Health check: http://localhost:8080/health
+
+📧 EMAIL SYSTEM: FULLY CONFIGURED
+   - SMTP Host: smtp.gmail.com
+   - Authentication: App password configured
+   - Templates: Professional HTML emails
+   - Delivery: Tested and working
+
+🔐 AUTHENTICATION SYSTEM: COMPLETE
+   - Registration → OTP verification → Account activation
+   - Login with email OR phone number
+   - Password recovery with email tokens
+   - JWT tokens with 7-day expiration
+   - Role-based access control
+
+💳 PAYMENT SYSTEM: INTEGRATED
+   - Flutterwave test keys configured
+   - Mobile money payment support
+   - Transaction tracking
+   - Payment verification
+
+🗄️ DATABASE: POPULATED
+   - Default admin user: admin@snapadeal.com / admin123
+   - Test categories created
+   - Sample deals available
+   - User accounts can be created
+
+================================================================================
+                                4. FRONTEND REQUIREMENTS
+================================================================================
+
+❌ CUSTOMER APP (localhost:3000) - NEEDS UPDATES:
+   Current Status: Basic authentication (login/register)
+   Required Updates:
+   - Add OTP verification step after registration
+   - Update login form to accept email OR phone
+   - Add "Forgot Password" functionality
+   - Add password reset page
+   - Improve error handling and user feedback
+   - Add loading states during API calls
+   - Update registration flow for better UX
+
+❌ MERCHANT APP (localhost:3001) - NEEDS UPDATES:
+   Current Status: Basic authentication
+   Required Updates:
+   - Same authentication improvements as customer app
+   - OTP verification for merchant registration
+   - Email/phone login support
+   - Password recovery functionality
+
+❌ ADMIN APP (localhost:3002) - NEEDS UPDATES:
+   Current Status: Basic authentication
+   Required Updates:
+   - Enhanced login with email/phone support
+   - Password recovery for admin users
+   - Better error handling
+
+================================================================================
+                                5. AUTHENTICATION FLOW IMPLEMENTATION
+================================================================================
+
+🔄 NEW REGISTRATION FLOW (REQUIRED):
+
+STEP 1: Registration Form
+- User enters: first_name, last_name, email, phone, password, role
+- Submit to: POST /api/v1/auth/register
+- Response: "Registration successful! Check email for OTP"
+
+STEP 2: OTP Verification Page (NEW COMPONENT NEEDED)
+- User enters 6-digit OTP from email
+- Submit to: POST /api/v1/auth/verify-otp
+- Response: User verified + JWT token
+- Redirect to dashboard/home
+
+STEP 3: Welcome Email Sent
+- Automatic welcome email sent after verification
+- User account status: active
+
+🔑 ENHANCED LOGIN FLOW (REQUIRED):
+
+STEP 1: Login Form Updates
+- Single input field: "Email or Phone Number"
+- Password field
+- Submit to: POST /api/v1/auth/login
+- Handle "pending_verification" status
+
+STEP 2: Error Handling
+- If user not verified: Show "Please check email for OTP"
+- If invalid credentials: Show "Invalid email/phone or password"
+- If account inactive: Show "Account is not active"
+
+🔐 PASSWORD RECOVERY FLOW (NEW FEATURE NEEDED):
+
+STEP 1: Forgot Password Page (NEW)
+- Email input field
+- Submit to: POST /api/v1/auth/forgot-password
+- Show: "Reset link sent to your email"
+
+STEP 2: Reset Password Page (NEW)
+- Extract token from URL: /reset-password?token=xxx
+- New password input
+- Submit to: POST /api/v1/auth/reset-password
+- Redirect to login with success message
+
+================================================================================
+                                6. API ENDPOINTS REFERENCE
+================================================================================
+
+🔐 AUTHENTICATION ENDPOINTS (ALL WORKING):
+
+POST /api/v1/auth/register
+Body: {
+  "first_name": "John",
+  "last_name": "Doe",
+  "email": "john@example.com",
+  "phone": "0700123456",
+  "password": "password123",
+  "role": "customer"
+}
+Response: {"message": "Registration successful!", "email": "john@example.com", "status": "pending_verification"}
+
+POST /api/v1/auth/verify-otp
+Body: {
+  "email": "john@example.com",
+  "otp": "123456"
+}
+Response: {"message": "Account verified!", "user": {...}, "token": "jwt_token"}
+
+POST /api/v1/auth/resend-otp
+Body: {
+  "email": "john@example.com"
+}
+Response: {"message": "OTP has been resent to your email"}
+
+POST /api/v1/auth/login
+Body: {
+  "email_or_phone": "john@example.com",  // OR "0700123456"
+  "password": "password123"
+}
+Response: {"message": "Login successful", "user": {...}, "token": "jwt_token"}
+
+POST /api/v1/auth/forgot-password
+Body: {
+  "email": "john@example.com"
+}
+Response: {"message": "Password reset link sent to your email"}
+
+POST /api/v1/auth/reset-password
+Body: {
+  "token": "reset_token_from_email",
+  "password": "newpassword123"
+}
+Response: {"message": "Password reset successful"}
+
+👤 USER ENDPOINTS (PROTECTED):
+
+GET /api/v1/users/profile
+Headers: Authorization: Bearer jwt_token
+Response: {"user": {...}}
+
+PUT /api/v1/users/profile
+Headers: Authorization: Bearer jwt_token
+Body: {
+  "first_name": "Updated Name",
+  "last_name": "Updated Last",
+  "phone": "0700123456"
+}
+
+🛍️ PUBLIC ENDPOINTS (NO AUTH REQUIRED):
+
+GET /api/v1/deals
+Response: {"deals": [...]}
+
+GET /api/v1/categories
+Response: {"categories": [...]}
+
+GET /api/v1/deals/search?q=food
+Response: {"deals": [...]}
+
+💳 TRANSACTION ENDPOINTS (PROTECTED):
+
+POST /api/v1/transactions
+Headers: Authorization: Bearer jwt_token
+Body: {
+  "deal_id": 1,
+  "quantity": 2,
+  "payment_method": "mtn_money",
+  "phone_number": "0700123456"
+}
+
+GET /api/v1/transactions
+Headers: Authorization: Bearer jwt_token
+Response: {"transactions": [...]}
+
+================================================================================
+                                7. TESTING CREDENTIALS
+================================================================================
+
+🧪 VERIFIED TEST USER (READY TO USE):
+Name: Aguti Christine
+Email: morgandannyoyoka@gmail.com
+Phone: 0772311601
+Password: newpassword456
+Role: customer
+Status: active, verified
+JWT Token: Available after login
+
+👑 ADMIN USER (READY TO USE):
+Email: admin@snapadeal.com
+Password: admin123
+Role: admin
+Status: active
+
+📧 EMAIL TESTING:
+- OTP emails are delivered to real email addresses
+- Password reset emails work
+- Welcome emails sent after verification
+- Check spam folder if emails don't arrive immediately
+
+🔧 API TESTING:
+All endpoints tested with curl and working perfectly
+CORS configured for all three frontend apps
+Error handling implemented and tested
+
+================================================================================
+                                8. DEVELOPMENT SETUP
+================================================================================
+
+🚀 BACKEND (ALREADY RUNNING):
+cd backend
+go run main.go
+Server: http://localhost:8080
+Health Check: http://localhost:8080/health
+
+🎨 FRONTEND APPS (NEED UPDATES):
+
+Customer App:
+cd customer-app
+npm install
+npm start
+URL: http://localhost:3000
+
+Merchant App:
+cd merchant-app
+npm install
+npm start
+URL: http://localhost:3001
+
+Admin App:
+cd admin-app
+npm install
+npm start
+URL: http://localhost:3002
+
+📁 PROJECT STRUCTURE:
+Snapadeal-Uganda/
+├── backend/                 (✅ COMPLETE)
+│   ├── main.go
+│   ├── handlers/
+│   ├── models/
+│   ├── services/
+│   └── middleware/
+├── customer-app/           (❌ NEEDS AUTH UPDATES)
+├── merchant-app/           (❌ NEEDS AUTH UPDATES)
+└── admin-app/              (❌ NEEDS AUTH UPDATES)
+
+================================================================================
+                                9. PRIORITY TASKS
+================================================================================
+
+🎯 WEEK 1 - CRITICAL (Customer App):
+
+1. CREATE OTP VERIFICATION COMPONENT
+   - 6-digit OTP input field
+   - Auto-submit when complete
+   - Resend OTP button with 60-second timer
+   - Error handling for invalid/expired OTP
+
+2. UPDATE REGISTRATION FLOW
+   - After successful registration, redirect to OTP page
+   - Pass email to OTP component
+   - After OTP verification, redirect to dashboard
+
+3. UPDATE LOGIN COMPONENT
+   - Change email field to "Email or Phone Number"
+   - Handle "pending_verification" error
+   - Show appropriate error messages
+
+4. CREATE FORGOT PASSWORD COMPONENTS
+   - ForgotPasswordForm.tsx (email input)
+   - ResetPasswordForm.tsx (new password with token)
+   - Add "Forgot Password?" link to login form
+
+5. IMPROVE ERROR HANDLING
+   - User-friendly error messages
+   - Loading states during API calls
+   - Success notifications
+
+🎯 WEEK 2 - IMPORTANT (Other Apps):
+
+1. UPDATE MERCHANT APP
+   - Same authentication improvements as customer app
+   - Test merchant registration and login
+
+2. UPDATE ADMIN APP
+   - Enhanced login with email/phone support
+   - Password recovery for admin users
+
+3. TESTING & REFINEMENT
+   - Test complete user journeys
+   - Fix any UI/UX issues
+   - Mobile responsiveness
+
+🎯 WEEK 3 - ENHANCEMENTS:
+
+1. Advanced Features
+   - Remember me functionality
+   - Auto-login after registration
+   - Better form validation
+
+2. UI/UX Improvements
+   - Loading spinners
+   - Better error styling
+   - Success animations
+
+================================================================================
+                                10. CODE EXAMPLES
+================================================================================
+
+🔧 REACT COMPONENT EXAMPLES:
+
+// 1. OTP VERIFICATION COMPONENT (NEW)
+import React, { useState } from 'react';
+import { api } from '../services/api';
+
+const OTPVerification = ({ email, onVerified }) => {
+  const [otp, setOtp] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const handleVerifyOTP = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+
+    try {
+      const response = await api.post('/auth/verify-otp', {
+        email: email,
+        otp: otp
+      });
+
+      localStorage.setItem('token', response.data.token);
+      localStorage.setItem('user', JSON.stringify(response.data.user));
+      onVerified(response.data.user);
+    } catch (error) {
+      setError(error.response?.data?.error || 'Invalid OTP');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResendOTP = async () => {
+    try {
+      await api.post('/auth/resend-otp', { email });
+      alert('OTP resent to your email');
+    } catch (error) {
+      setError('Failed to resend OTP');
+    }
+  };
+
+  return (
+    <div className="otp-verification">
+      <h2>Verify Your Email</h2>
+      <p>Enter the 6-digit code sent to {email}</p>
+      
+      <form onSubmit={handleVerifyOTP}>
+        <input
+          type="text"
+          value={otp}
+          onChange={(e) => setOtp(e.target.value)}
+          placeholder="Enter 6-digit OTP"
+          maxLength="6"
+          required
+        />
+        
+        {error && <div className="error">{error}</div>}
+        
+        <button type="submit" disabled={loading || otp.length !== 6}>
+          {loading ? 'Verifying...' : 'Verify OTP'}
+        </button>
+      </form>
+      
+      <button onClick={handleResendOTP} className="resend-btn">
+        Resend OTP
+      </button>
+    </div>
+  );
+};
+
+// 2. UPDATED LOGIN COMPONENT
+const Login = () => {
+  const [emailOrPhone, setEmailOrPhone] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+
+    try {
+      const response = await api.post('/auth/login', {
+        email_or_phone: emailOrPhone,
+        password: password
+      });
+
+      localStorage.setItem('token', response.data.token);
+      localStorage.setItem('user', JSON.stringify(response.data.user));
+      
+      // Redirect based on user role
+      if (response.data.user.role === 'admin') {
+        window.location.href = 'http://localhost:3002';
+      } else if (response.data.user.role === 'merchant') {
+        window.location.href = 'http://localhost:3001';
+      } else {
+        navigate('/dashboard');
+      }
+    } catch (error) {
+      if (error.response?.data?.status === 'pending_verification') {
+        setError('Please verify your email address first. Check your inbox for OTP.');
+      } else {
+        setError(error.response?.data?.error || 'Login failed');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <form onSubmit={handleLogin}>
+      <input
+        type="text"
+        value={emailOrPhone}
+        onChange={(e) => setEmailOrPhone(e.target.value)}
+        placeholder="Email or Phone Number"
+        required
+      />
+      
+      <input
+        type="password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        placeholder="Password"
+        required
+      />
+      
+      {error && <div className="error">{error}</div>}
+      
+      <button type="submit" disabled={loading}>
+        {loading ? 'Signing In...' : 'Sign In'}
+      </button>
+      
+      <a href="/forgot-password">Forgot Password?</a>
+    </form>
+  );
+};
+
+// 3. FORGOT PASSWORD COMPONENT (NEW)
+const ForgotPassword = () => {
+  const [email, setEmail] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
+
+  const handleForgotPassword = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+    setMessage('');
+
+    try {
+      await api.post('/auth/forgot-password', { email });
+      setMessage('Password reset link sent to your email');
+    } catch (error) {
+      setError('Failed to send reset email');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <form onSubmit={handleForgotPassword}>
+      <h2>Reset Password</h2>
+      <input
+        type="email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        placeholder="Enter your email"
+        required
+      />
+      
+      {error && <div className="error">{error}</div>}
+      {message && <div className="success">{message}</div>}
+      
+      <button type="submit" disabled={loading}>
+        {loading ? 'Sending...' : 'Send Reset Link'}
+      </button>
+    </form>
+  );
+};
+
+// 4. RESET PASSWORD COMPONENT (NEW)
+const ResetPassword = () => {
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
+  
+  // Get token from URL
+  const searchParams = new URLSearchParams(window.location.search);
+  const token = searchParams.get('token');
+
+  const handleResetPassword = async (e) => {
+    e.preventDefault();
+    
+    if (password !== confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+    
+    setLoading(true);
+    setError('');
+
+    try {
+      await api.post('/auth/reset-password', {
+        token: token,
+        password: password
+      });
+      
+      alert('Password reset successful');
+      navigate('/login');
+    } catch (error) {
+      setError('Invalid or expired reset token');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <form onSubmit={handleResetPassword}>
+      <h2>Set New Password</h2>
+      
+      <input
+        type="password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        placeholder="New Password"
+        minLength="6"
+        required
+      />
+      
+      <input
+        type="password"
+        value={confirmPassword}
+        onChange={(e) => setConfirmPassword(e.target.value)}
+        placeholder="Confirm Password"
+        minLength="6"
+        required
+      />
+      
+      {error && <div className="error">{error}</div>}
+      
+      <button type="submit" disabled={loading}>
+        {loading ? 'Updating...' : 'Update Password'}
+      </button>
+    </form>
+  );
+};
+
+🔧 ROUTING UPDATES NEEDED:
+
+// App.tsx - Add new routes
+import OTPVerification from './components/OTPVerification';
+import ForgotPassword from './components/ForgotPassword';
+import ResetPassword from './components/ResetPassword';
+
+function App() {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/verify-otp" element={<OTPVerification />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+        {/* ... other routes */}
+      </Routes>
+    </Router>
+  );
+}
+
+================================================================================
+                                11. TROUBLESHOOTING
+================================================================================
+
+❌ COMMON ISSUES & SOLUTIONS:
+
+1. CORS ERRORS:
+   ✅ SOLVED: Backend CORS configured for all apps
+   If still occurring: Check browser console and verify app URL
+
+2. EMAIL NOT RECEIVED:
+   ✅ EMAIL SYSTEM WORKING: Check spam folder
+   Gmail may delay test emails by 1-2 minutes
+   Backend logs show email sending status
+
+3. OTP EXPIRED:
+   OTP expires in 10 minutes
+   Use resend OTP functionality
+   Check backend logs for OTP generation
+
+4. TOKEN ERRORS:
+   JWT tokens expire in 7 days
+   Clear localStorage and login again
+   Check Authorization header format: "Bearer token"
+
+5. API ENDPOINT NOT FOUND:
+   ✅ ALL ENDPOINTS TESTED AND WORKING
+   Verify backend is running on localhost:8080
+   Check endpoint spelling and HTTP method
+
+6. LOGIN ISSUES:
+   Verify user account is verified (is_verified: true)
+   Check user status is "active"
+   Try both email and phone login
+
+🔧 DEBUGGING TIPS:
+
+1. Check Browser Console:
+   - Network tab for API requests/responses
+   - Console tab for JavaScript errors
+   - Application tab for localStorage tokens
+
+2. Check Backend Logs:
+   - Terminal shows detailed request/response logs
+   - Email sending status
+   - Database operations
+
+3. Test API Directly:
+   Use curl or Postman to test endpoints
+   Verify backend responses before frontend integration
+
+4. Database Check:
+   SQLite database: snapadeal.db
+   Check user records and verification status
+
+================================================================================
+                                12. DEPLOYMENT NOTES
+================================================================================
+
+🚀 PRODUCTION READINESS:
+
+✅ BACKEND: PRODUCTION READY
+   - Secure authentication system
+   - Professional email templates
+   - Error handling implemented
+   - Payment integration complete
+   - Database models optimized
+
+❌ FRONTEND: NEEDS AUTH UPDATES FIRST
+
+🔧 BEFORE GOING LIVE:
+
+1. Environment Variables:
+   - Update email templates with production URLs
+   - Configure production Flutterwave keys
+   - Set strong JWT secret
+   - Configure production SMTP service
+
+2. Database:
+   - Migrate from SQLite to PostgreSQL
+   - Set up database backups
+   - Configure connection pooling
+
+3. Security:
+   - Enable HTTPS for all apps
+   - Update CORS origins for production domains
+   - Implement rate limiting
+   - Add security headers
+
+4. Monitoring:
+   - Set up error tracking
+   - Configure logging
+   - Monitor email delivery
+   - Track payment transactions
+
+================================================================================
+                                FINAL SUMMARY
+================================================================================
+
+🎉 WHAT'S WORKING PERFECTLY:
+✅ Complete backend API with authentication
+✅ Email system with OTP verification
+✅ Payment integration with Flutterwave
+✅ Admin approval workflow
+✅ Database with all models
+✅ CORS configuration
+✅ Error handling and logging
+
+🚧 WHAT NEEDS TO BE DONE:
+❌ Update frontend authentication flows
+❌ Add OTP verification components
+❌ Implement password recovery UI
+❌ Improve error handling in frontend
+❌ Add loading states and better UX
+
+🎯 SUCCESS CRITERIA:
+When frontend updates are complete, users should be able to:
+1. Register with email/phone → Receive OTP → Verify → Login
+2. Login with either email or phone number
+3. Reset password via email if forgotten
+4. Browse deals and make purchases
+5. Merchants can create deals for admin approval
+6. Admins can manage the platform
+
+📞 SUPPORT:
+- Backend is fully documented and tested
+- All API endpoints work with provided examples
+- Email system is configured and functional
+- Test credentials provided for immediate testing
+
+The hardest part (backend + email system) is complete!
+Frontend updates are straightforward React component work.
+
+Good luck with the implementation! 🚀
+
+================================================================================
+                                END OF DOCUMENT
+================================================================================
